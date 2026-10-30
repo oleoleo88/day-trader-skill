@@ -1,0 +1,23 @@
+services:
+  tgnet:
+    build: .
+    container_name: tgnet
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data          # база: посты, уроки, статистика – переживает пересборки
+      - ./config:/app/config      # правишь конфиг/промпты без пересборки (нужен перезапуск)
+    ports:
+      - "127.0.0.1:8787:8787"     # health; наружу не открываем
+    logging:
+      driver: json-file
+      options: {max-size: "20m", max-file: "5"}
+
+  # Авто-перезапуск, если health показывает зависание
+  autoheal:
+    image: willfarrell/autoheal:1.2.0
+    restart: unless-stopped
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

@@ -1,0 +1,72 @@
+# Общие настройки сети. Секреты – только в .env (сюда подставляются через ${VAR}).
+
+owner_chat_id: ${OWNER_CHAT_ID}      # твой Telegram id (python -m tgnet whoami)
+bot_token: ${BOT_TOKEN}              # бот-«пульт»: одобрения, отчёты, команды. Может же постить в каналы.
+timezone: Europe/Moscow
+db_path: data/tgnet.sqlite3
+log_level: INFO
+health_port: 8787                    # http://<vps>:8787/ – состояние циклов для мониторинга
+
+report_time: "23:00"                 # ежедневный отчёт тебе в личку
+hr_weekday: 6                        # 0=пн … 6=вс – HR-агент разбирает неделю и предлагает изменения
+hr_time: "12:00"
+hr_auto_approve: false               # true = безопасные предложения HR применяются без твоего ✅
+
+learning:
+  lessons_in_prompt: 12              # сколько уроков подмешивать агенту в промпт
+  autopilot_after_decisions: 30      # после стольких твоих решений…
+  autopilot_min_clean_rate: 0.9      # …и такой доли «одобрено без правок» бот предложит автопилот
+
+llm:
+  daily_budget_usd: 5                # при превышении платные модели отключаются (кроме essential_roles)
+  essential_roles: [moderator]
+  retries: 2
+
+  providers:
+    gemini:
+      kind: gemini
+      api_key: ${GEMINI_API_KEY}
+    easy:                            # любой OpenAI-совместимый API (ключ вида sk-…)
+      kind: openai
+      base_url: ${EASY_BASE_URL}
+      api_key: ${EASY_API_KEY}
+      optional: true
+    local:                           # Ollama на ноутбуке (RTX 5070 Ti) через Tailscale – бесплатный резерв
+      kind: openai
+      base_url: ${OLLAMA_BASE_URL:-http://localhost:11434/v1}
+      api_key: ollama
+      optional: true
+      timeout: 180
+
+  models:                            # алиасы → конкретные модели. price_* – $ за 1M токенов (для бюджета)
+    fast:
+      provider: gemini
+      model: ${GEMINI_FAST_MODEL}
+      price_in: ${GEMINI_FAST_PRICE_IN:-0.3}
+      price_out: ${GEMINI_FAST_PRICE_OUT:-2.5}
+    smart:
+      provider: gemini
+      model: ${GEMINI_SMART_MODEL}
+      price_in: ${GEMINI_SMART_PRICE_IN:-1.25}
+      price_out: ${GEMINI_SMART_PRICE_OUT:-10}
+      max_output_tokens: 8192
+    alt:
+      provider: easy
+      model: ${EASY_MODEL:-gpt-4o-mini}
+      price_in: ${EASY_PRICE_IN:-0.5}
+      price_out: ${EASY_PRICE_OUT:-1.5}
+    local:
+      provider: local
+      model: ${OLLAMA_MODEL:-qwen3:14b}
+
+  roles:                             # роль агента → цепочка моделей (по порядку, при сбое – следующая)
+    triage:    [fast, alt, local]
+    factcheck: [smart, alt]
+    grounding: [smart, fast]         # проверка через Google Search (только Gemini)
+    writer:    [smart, alt, local]
+    reviewer:  [alt, smart]          # ревьюер на другой модели, чем автор: меньше общих слепых зон
+    moderator: [fast, local, alt]
+    learner:   [smart, alt]
+    analyst:   [smart, alt]
+    hr:        [smart, alt]
+    default:   [fast, alt, local]

@@ -1,0 +1,87 @@
+# Источники футбольного пакета.
+# tier: 1 – официальные (клубы, лиги, федерации), 2 – крупные СМИ, 3 – инсайдеры/агрегаторы.
+# group: «группа независимости». Два материала одной группы считаются одним подтверждением.
+# ПЕРЕД ЗАПУСКОМ: python -m tgnet sources – проверит каждый адрес. Нерабочие выключи (enabled: false).
+pack: football
+
+sources:
+  # --- Крупные англоязычные СМИ (T2)
+  - {id: bbc_football, name: BBC Sport, kind: rss, url: "https://feeds.bbci.co.uk/sport/football/rss.xml", tier: 2, group: bbc, lang: en}
+  - {id: guardian_football, name: The Guardian, kind: rss, url: "https://www.theguardian.com/football/rss", tier: 2, group: guardian, lang: en}
+  - {id: sky_football, name: Sky Sports, kind: rss, url: "https://www.skysports.com/rss/12040", tier: 2, group: sky, lang: en}
+  - {id: espn_soccer, name: ESPN, kind: rss, url: "https://www.espn.com/espn/rss/soccer/news", tier: 2, group: espn, lang: en}
+
+  # --- Русскоязычные СМИ (T2). Адреса RSS сверь командой sources и поправь при необходимости.
+  - {id: championat_football, name: Чемпионат, kind: rss, url: "https://www.championat.com/rss/news/football/", tier: 2, group: championat, lang: ru}
+  - {id: sportexpress_football, name: Спорт-Экспресс, kind: rss, url: "https://www.sport-express.ru/services/materials/news/football/se/", tier: 2, group: sportexpress, lang: ru}
+  - {id: sportsru_football, name: Sports.ru, kind: rss, url: "https://www.sports.ru/rss/rubric.xml?s=208", tier: 2, group: sportsru, lang: ru}
+
+  # --- Официальные Telegram-каналы (T1). Впиши проверенные @username официальных каналов клубов/лиг
+  #     (галочка верификации или ссылка с официального сайта!) и включи enabled: true.
+  - {id: tg_official_example, name: "Официальный канал клуба", kind: telegram, url: "https://t.me/OFFICIAL_HANDLE", tier: 1, group: official_example, lang: ru, interval_min: 3, enabled: false}
+
+  # --- Инсайдеры (T3): публикуются только как «Слух» с атрибуцией и через твоё одобрение.
+  - {id: tg_insider_example, name: "Инсайдер", kind: telegram, url: "https://t.me/INSIDER_HANDLE", tier: 3, group: insider_example, lang: en, interval_min: 3, enabled: false}
+
+# Белый список доменов для проверки через Google Search (Gemini grounding).
+# Подтверждение из поиска засчитывается ТОЛЬКО с этих доменов. 1 – официальный, 2 – крупное СМИ.
+trusted_domains:
+  # лиги, федерации, турниры
+  uefa.com: 1
+  fifa.com: 1
+  premierleague.com: 1
+  laliga.com: 1
+  legaseriea.it: 1
+  bundesliga.com: 1
+  ligue1.com: 1
+  premierliga.ru: 1
+  rfs.ru: 1
+  thefa.com: 1
+  # клубы
+  realmadrid.com: 1
+  fcbarcelona.com: 1
+  atleticodemadrid.com: 1
+  manutd.com: 1
+  mancity.com: 1
+  liverpoolfc.com: 1
+  arsenal.com: 1
+  chelseafc.com: 1
+  tottenhamhotspur.com: 1
+  newcastleunited.com: 1
+  juventus.com: 1
+  acmilan.com: 1
+  inter.it: 1
+  asroma.com: 1
+  sscnapoli.it: 1
+  fcbayern.com: 1
+  bvb.de: 1
+  psg.fr: 1
+  fc-zenit.ru: 1
+  spartak.com: 1
+  pfc-cska.com: 1
+  fcdynamo.ru: 1
+  fclm.ru: 1
+  fckrasnodar.ru: 1
+  # крупные СМИ
+  bbc.co.uk: 2
+  bbc.com: 2
+  theguardian.com: 2
+  skysports.com: 2
+  espn.com: 2
+  nytimes.com: 2          # The Athletic
+  reuters.com: 2
+  apnews.com: 2
+  marca.com: 2
+  as.com: 2
+  mundodeportivo.com: 2
+  sport.es: 2
+  gazzetta.it: 2
+  corrieredellosport.it: 2
+  kicker.de: 2
+  lequipe.fr: 2
+  sport-express.ru: 2
+  championat.com: 2
+  sports.ru: 2
+  tass.ru: 2
+  rsport.ria.ru: 2
+  matchtv.ru: 2

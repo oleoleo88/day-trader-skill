@@ -1,0 +1,21 @@
+# Альтернатива Docker: systemd. Установка:
+#   sudo cp deploy/tgnet.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#   sudo systemctl enable --now tgnet && journalctl -u tgnet -f
+[Unit]
+Description=tgnet - Telegram channel network
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tgnet
+WorkingDirectory=/opt/tgnet
+ExecStart=/opt/tgnet/.venv/bin/python -m tgnet run
+Restart=always
+RestartSec=10
+# мягкая остановка: агенты дописывают текущий шаг
+KillSignal=SIGTERM
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target

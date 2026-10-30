@@ -1,0 +1,71 @@
+id: esports_ru
+enabled: true
+title: "Киберспорт | Главное"
+chat_id: ${ESPORTS_CHAT_ID}
+username: ${ESPORTS_USERNAME}
+discussion_chat_id: ${ESPORTS_DISCUSSION_ID}
+packs: [esports]
+language: ru
+
+autonomy: approve
+auto_confidence: 0.88
+triage_threshold: 60
+max_selected_per_cycle: 4
+images: true
+
+focus: >
+  Киберспорт для русскоязычной аудитории: CS2 и Dota 2 в первую очередь, затем Valorant и LoL.
+  Мейджоры и топ-турниры (BLAST, ESL/IEM, PGL, The International, Riyadh/EWC), результаты плей-офф,
+  трансферы и смены составов топ-команд (NAVI, Team Spirit, Vitality, FaZe, G2, MOUZ, Falcons, Virtus.pro и др.),
+  официальные обновления и патчи от Valve/Riot, баны и решения организаторов. СНГ-команды – приоритет.
+  Не берём: мобильные дисциплины (если не сенсация), гайды, скины/кейсы, беттинг.
+exclude_keywords: [ставк, коэффициент, кейс, skin, betting, odds, промокод]
+
+voice: |
+  Свой человек в киберспорте: знает сленг (мейджор, ростер, бенч, плей-офф, мап-пул), но пишет понятно.
+  Живо и коротко, без кринжа и без капслока. Факты – главное, эмоции – дозированно.
+
+format_rules: |
+  - Первая строка – суть жирным (<b>…</b>), до 90 символов. Можно 1 эмодзи по теме (🎮 🔁 🏆 ⚔️ 🛠).
+  - Дальше 1–2 коротких абзаца: счёт по картам, стадия турнира, состав, детали патча – только из факт-листа.
+  - Названия команд и турниров – в оригинальном написании (NAVI, Team Spirit, IEM Katowice).
+  - Для статуса reported/rumor источник в тексте («по данным HLTV»).
+  - Без хештегов. Длина 200–600 символов.
+
+signature: ""
+forbidden_phrases: []
+
+schedule:
+  quiet_hours: "02:00-08:00"
+  min_interval_min: 20
+  max_posts_per_day: 18
+  breaking_score: 90
+  max_age_hours: 8
+  approval_ttl_hours: 5
+
+verification:
+  allow_rumors: true
+  independent_confirmations: 2
+  max_item_age_hours: 24
+  recheck_minutes: 10
+  recheck_window_hours: 3
+  use_grounding: true
+
+moderation:
+  enabled: true
+  use_llm: true
+  stop_words: [кейс, скины бесплатно, раздача скинов, csgo.run, промокод]
+
+specialists:
+  - name: esports_daily_digest
+    title: "Киберспорт за день"
+    purpose: "Вечерняя сводка главного"
+    schedule: {daily_at: "23:10"}
+    lookback_hours: 16
+    min_posts: 4
+    score: 72
+    instructions: |
+      Пост «🎮 Киберспорт за день»: 4–7 пунктов, по одной строке, сначала CS2 и Dota 2, затем остальное.
+      Короткая вводная фраза перед списком.
+
+ads: []

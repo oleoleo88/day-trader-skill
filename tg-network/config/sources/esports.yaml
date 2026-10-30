@@ -1,0 +1,41 @@
+# Источники киберспортивного пакета. Проверка: python -m tgnet sources
+pack: esports
+
+sources:
+  # --- Официальные новости разработчиков через Steam (T1): только анонсы Valve
+  - {id: steam_cs2, name: "Counter-Strike 2 (Valve)", kind: steam, url: "https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=730&count=15&maxlength=2000", tier: 1, group: valve, lang: en, official_only: true, interval_min: 10}
+  - {id: steam_dota2, name: "Dota 2 (Valve)", kind: steam, url: "https://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=570&count=15&maxlength=2000", tier: 1, group: valve, lang: en, official_only: true, interval_min: 10}
+
+  # --- Профильные СМИ (T2)
+  - {id: hltv, name: HLTV, kind: rss, url: "https://www.hltv.org/rss/news", tier: 2, group: hltv, lang: en}
+  - {id: dotesports, name: Dot Esports, kind: rss, url: "https://dotesports.com/feed", tier: 2, group: dotesports, lang: en}
+  - {id: esportsinsider, name: Esports Insider, kind: rss, url: "https://esportsinsider.com/feed", tier: 2, group: esportsinsider, lang: en}
+  - {id: cybersport_ru, name: Cybersport.ru, kind: rss, url: "https://www.cybersport.ru/rss/materials", tier: 2, group: cybersportru, lang: ru}
+
+  # --- Агрегаторы (T3)
+  - {id: dexerto, name: Dexerto, kind: rss, url: "https://www.dexerto.com/feed/", tier: 3, group: dexerto, lang: en}
+
+  # --- Официальные Telegram-каналы команд/турниров (T1): впиши проверенные @username и включи.
+  - {id: tg_team_example, name: "Официальный канал команды", kind: telegram, url: "https://t.me/OFFICIAL_HANDLE", tier: 1, group: team_example, lang: ru, interval_min: 3, enabled: false}
+
+trusted_domains:
+  counter-strike.net: 1
+  steampowered.com: 1
+  steamcommunity.com: 1
+  dota2.com: 1
+  riotgames.com: 1
+  lolesports.com: 1
+  valorantesports.com: 1
+  playvalorant.com: 1
+  blast.tv: 1
+  eslgaming.com: 1
+  esl.com: 1
+  pglesports.com: 1
+  esportsworldcup.com: 1
+  navi.gg: 1
+  hltv.org: 2
+  liquipedia.net: 2
+  dotesports.com: 2
+  esportsinsider.com: 2
+  cybersport.ru: 2
+  dexerto.com: 3
