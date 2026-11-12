@@ -1,0 +1,244 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  Настройки канала. Секреты (токены, ID чатов) лежат в .env, здесь только поведение.
+#  После правки перезапустите бота: docker compose restart
+# ─────────────────────────────────────────────────────────────────────────────
+
+channel:
+  name: "GTA 6 | ГТА 6"            # подпись-ссылка в конце каждого поста
+  timezone: "Europe/Moscow"        # все времена ниже указаны в этом поясе
+  release_date: "2026-11-19"       # дата релиза (для обратного отсчёта и подсказок редактору)
+  footer: true                     # добавлять подпись со ссылкой на канал
+  source_link: true                # добавлять строку «Источник: …»
+  hashtags: true                   # добавлять 1-3 рубрикационных хэштега
+  category_label: true             # метка достоверности в начале поста (Официально / Слух / Утечка…)
+
+# ── Публикация ───────────────────────────────────────────────────────────────
+publishing:
+  # auto   — всё, что прошло редактора, выходит без человека
+  # hybrid — официальные и уверенные новости выходят сами, слухи/утечки/сомнительное идут на согласование
+  # review — каждый пост ждёт кнопку «Опубликовать» в админ-чате
+  mode: hybrid
+  min_importance: 5                # важность по шкале 1-10; ниже порога новость отбрасывается
+  breaking_importance: 9           # с этой важности пост выходит «молнией»: без очереди и тихих часов
+  auto_categories: [official, media, industry, guide]   # что в режиме hybrid может выйти без согласования
+  auto_min_confidence: 0.8         # минимальная уверенность редактора для автопубликации
+  auto_min_tier: 2                 # источники не хуже этого уровня могут выходить сами (1 — официальные)
+  max_posts_per_day: 14            # дневной лимит обычных постов (молнии и реклама не считаются)
+  min_gap_minutes: 35              # минимальная пауза между обычными постами
+  quiet_hours: [0, 8]              # с 00:00 до 08:00 обычные посты ждут утра; [] — без тихих часов
+  silent_at_night: true            # молнии ночью выходят без звука
+  stale_after_hours: 20            # новость, не вышедшая за это время, снимается с очереди
+  review_ttl_hours: 36             # черновик без решения админа автоматически закрывается
+
+# ── Сбор новостей ────────────────────────────────────────────────────────────
+collector:
+  poll_interval_sec: 150           # как часто опрашивать источники
+  backfill_hours: 10               # при первом запуске брать новости не старше N часов
+  max_age_hours: 48                # более старые записи игнорируются всегда
+  min_source_chars: 350            # если текста источника меньше, пост идёт только на согласование
+  dedupe_window_hours: 96          # окно поиска дублей
+  title_similarity: 0.62           # порог схожести заголовков (0..1), выше — считаем дублем
+  user_agent: "Mozilla/5.0 (compatible; NewsReaderBot/1.0)"
+  # Запись из «общего» источника берётся в работу, только если в заголовке/анонсе есть одно из слов.
+  # Источники с focused: true фильтр пропускают целиком.
+  keywords:
+    - "gta 6"
+    - "gta vi"
+    - "gta6"
+    - "gtavi"
+    - "grand theft auto 6"
+    - "grand theft auto vi"
+    - "гта 6"
+    - "гта vi"
+    - "гта6"
+    - "rockstar"
+    - "рокстар"
+    - "take-two"
+    - "take two"
+    - "zelnick"
+    - "зельник"
+    - "vice city"
+    - "вайс-сити"
+    - "вайс сити"
+    - "leonida"
+    - "gta online"
+    - "гта онлайн"
+  # tier: 1 — официальный первоисточник, 2 — крупное издание, 3 — фан-сайты, инсайдеры, сообщества
+  # Список проверяется командой `python -m gta6bot check` и в /sources; нерабочие ленты бот пометит сам.
+  sources:
+    - {name: "Rockstar Games (YouTube)", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCuWcjpKbIDAbZfHoru1toFg", tier: 1, lang: en, focused: true, interval: 60}
+    - {name: "Google News: Rockstar Newswire", url: "https://news.google.com/rss/search?q=site:rockstargames.com+%22Grand+Theft+Auto+VI%22+when:2d&hl=en-US&gl=US&ceid=US:en", tier: 1, lang: en, focused: true, interval: 120}
+    - {name: "VGC", url: "https://www.videogameschronicle.com/feed/", tier: 2, lang: en}
+    - {name: "IGN", url: "https://feeds.feedburner.com/ign/all", tier: 2, lang: en}
+    - {name: "Eurogamer", url: "https://www.eurogamer.net/feed", tier: 2, lang: en}
+    - {name: "GameSpot", url: "https://www.gamespot.com/feeds/mashup/", tier: 2, lang: en}
+    - {name: "GamesRadar+", url: "https://www.gamesradar.com/rss/", tier: 2, lang: en}
+    - {name: "PC Gamer", url: "https://www.pcgamer.com/rss/", tier: 2, lang: en}
+    - {name: "Insider Gaming", url: "https://insider-gaming.com/feed/", tier: 2, lang: en}
+    - {name: "Kotaku", url: "https://kotaku.com/rss", tier: 2, lang: en}
+    - {name: "Polygon", url: "https://www.polygon.com/rss/index.xml", tier: 2, lang: en}
+    - {name: "Rock Paper Shotgun", url: "https://www.rockpapershotgun.com/feed", tier: 2, lang: en}
+    - {name: "RockstarINTEL", url: "https://rockstarintel.com/feed/", tier: 3, lang: en, focused: true}
+    - {name: "GTA BOOM", url: "https://www.gtaboom.com/feed/", tier: 3, lang: en, focused: true}
+    - {name: "Google News: GTA 6 (EN)", url: "https://news.google.com/rss/search?q=%22GTA+6%22+OR+%22GTA+VI%22+when:1d&hl=en-US&gl=US&ceid=US:en", tier: 3, lang: en, focused: true, interval: 300}
+    - {name: "DTF", url: "https://dtf.ru/rss/all", tier: 2, lang: ru}
+    - {name: "StopGame", url: "https://rss.stopgame.ru/rss_news.xml", tier: 2, lang: ru}
+    - {name: "Игромания", url: "https://www.igromania.ru/rss/all.rss", tier: 2, lang: ru}
+    - {name: "PlayGround", url: "https://www.playground.ru/rss/news.xml", tier: 2, lang: ru}
+    - {name: "GameMag", url: "https://gamemag.ru/rss/feed", tier: 2, lang: ru}
+    - {name: "Shazoo", url: "https://shazoo.ru/feed/rss", tier: 2, lang: ru}
+    - {name: "iXBT.games", url: "https://ixbt.games/rss", tier: 2, lang: ru}
+    - {name: "VGTimes", url: "https://vgtimes.ru/rss/", tier: 2, lang: ru}
+    - {name: "Google News: ГТА 6 (RU)", url: "https://news.google.com/rss/search?q=%22GTA+6%22+OR+%22%D0%93%D0%A2%D0%90+6%22+when:1d&hl=ru&gl=RU&ceid=RU:ru", tier: 3, lang: ru, focused: true, interval: 300}
+    - {name: "Reddit r/GTA6 (top за сутки)", url: "https://www.reddit.com/r/GTA6/top/.rss?t=day", tier: 3, lang: en, focused: true, interval: 600, enabled: false}
+
+# ── ИИ (Claude API) ──────────────────────────────────────────────────────────
+llm:
+  # По умолчанию всё работает на Claude Opus 5.5 — максимум качества.
+  # Чтобы удешевить фоновые задачи примерно в 40 раз, поставьте для triage и moderation
+  # модель claude-haiku-5-5 (посты при этом по-прежнему пишет Opus).
+  models:
+    triage: claude-opus-5-5        # оценка важности и поиск дублей
+    writer: claude-opus-5-5        # написание постов
+    moderation: claude-opus-5-5    # ИИ-судья в комментариях
+    qa: claude-opus-5-5            # ответы на вопросы (/ask)
+    poll: claude-opus-5-5          # опросы и викторины
+  effort:                          # low | medium | high | xhigh | max
+    triage: low
+    writer: medium
+    moderation: low
+    qa: low
+    poll: medium
+  refusal_fallback: true           # если защитный классификатор отклонил запрос, API сам повторит его на запасной модели
+  timeout_sec: 120
+  max_concurrency: 4
+
+# ── Модерация комментариев ───────────────────────────────────────────────────
+moderation:
+  enabled: true
+  first_comment: true              # бот оставляет первый комментарий под каждым постом
+  first_comment_text: |
+    💬 Обсуждаем здесь. Коротко о правилах: без спама, рекламы и оскорблений. Сюжетные спойлеры прячем под скрытый текст.
+    Нашли новость раньше нас? Пришлите её боту: {bot_link}
+  rules_text: |
+    <b>Правила комментариев</b>
+    1. Без рекламы, ссылок-приглашений и «заработка».
+    2. Без оскорблений и травли. Спорим о GTA, а не друг о друге.
+    3. Сюжетные спойлеры только под скрытым текстом.
+    4. Политика и оффтоп вне игры удаляются.
+    Нарушения: предупреждение → мут → бан. Спам-боты банятся сразу.
+  delete_service_messages: true    # удалять «вступил/вышел»
+  block_channel_senders: true      # удалять комментарии от имени чужих каналов (частый канал спама)
+  links:
+    policy: newcomers              # off — не трогать; newcomers — резать у новичков; all — резать у всех
+    newcomer_messages: 15          # пока у человека меньше стольких сообщений, он «новичок»
+    allow_domains: [rockstargames.com, youtube.com, youtu.be, reddit.com, x.com, twitter.com, twitch.tv,
+                    playstation.com, xbox.com, store.playstation.com, dtf.ru, ign.com, t.me]
+    block_invites: true            # t.me/+…, joinchat и @упоминания чужих каналов режутся у всех
+  flood:
+    messages: 6                    # больше N сообщений…
+    per_seconds: 12                # …за T секунд — мут
+    mute_minutes: 15
+    duplicates: 3                  # одно и то же сообщение N раз за 2 минуты — удаление и предупреждение
+  max_custom_emoji: 12             # больше — подозрение на спам премиум-эмодзи
+  profanity: off                   # off | delete | warn  (GTA — игра 18+, по умолчанию мат не трогаем)
+  # Жёсткие фразы: сообщение удаляется сразу, новичок получает бан, остальные — предупреждение.
+  hard_phrases:
+    - "заработок от"
+    - "заработок в интернете"
+    - "доход от"
+    - "пассивный доход"
+    - "без вложений"
+    - "пиши в лс"
+    - "пишите в лс"
+    - "пиши в личку"
+    - "пишите в личку"
+    - "пишите в личные"
+    - "ищу людей"
+    - "ищем людей"
+    - "нужны люди"
+    - "удаленная работа"
+    - "удаленный заработок"
+    - "подработка"
+    - "темка"
+    - "арбитраж"
+    - "инвестиц"
+    - "казино"
+    - "1xbet"
+    - "1win"
+    - "ставки на спорт"
+    - "фрибет"
+    - "onlyfans"
+    - "интим"
+    - "эскорт"
+    - "закладк"
+    - "накрутка"
+    - "раскрутка канала"
+    - "airdrop"
+    - "free nitro"
+    - "бесплатные v-bucks"
+  # Мягкие фразы: не удаляем сразу, а отдаём ИИ-судье (или пропускаем, если судья выключен).
+  soft_phrases:
+    - "крипт"
+    - "биткоин"
+    - "usdt"
+    - "промокод"
+    - "скидк"
+    - "продам"
+    - "куплю"
+    - "аккаунт"
+    - "ключи"
+    - "подпишись"
+    - "подписывайтесь"
+    - "мой канал"
+    - "в профиле"
+    - "в био"
+    - "ссылка в"
+    - "переходи"
+    - "бесплатно"
+    - "розыгрыш"
+    - "взлом"
+    - "чит"
+    - "сдохни"
+    - "убью"
+    - "убей себя"
+  llm_judge:
+    enabled: true
+    scrutiny_messages: 2           # первые N сообщений каждого нового комментатора проверяет ИИ
+    min_chars: 12                  # совсем короткие реплики ИИ не показываем
+    min_confidence: 0.75           # ниже — сообщение остаётся
+    daily_limit: 600               # потолок обращений к ИИ-судье в сутки (защита бюджета)
+    spoiler_guard: true            # удалять сюжетные спойлеры без скрытого текста
+    politics: delete               # delete | ignore — оффтоп-политика
+  # Лестница наказаний: номер предупреждения → действие
+  ladder: ["warn", "mute:60", "mute:1440", "ban"]
+  warn_ttl_days: 30                # предупреждения сгорают через N дней
+  notice_ttl_sec: 30               # через сколько секунд бот убирает свои служебные реплики
+  log_deletions: true              # присылать в админ-чат сводку удалённого (видно ложные срабатывания)
+
+# ── Рубрики ──────────────────────────────────────────────────────────────────
+rubrics:
+  countdown: {enabled: true, time: "10:00"}                  # «До релиза N дней», пока дата не наступила
+  digest: {enabled: true, time: "21:30", min_posts: 4}       # «Главное за день» со ссылками на посты
+  poll: {enabled: true, weekday: 5, time: "18:00"}           # опрос/викторина раз в неделю (0 — пн … 6 — вс)
+  weekly_report: {enabled: true, weekday: 0, time: "10:30"}  # отчёт админу
+
+# ── Сообщество ───────────────────────────────────────────────────────────────
+community:
+  suggestions: true                # «предложка» в личке бота
+  ad_inquiries: true               # приём рекламных заявок через бота
+  qa: true                         # /ask — ИИ отвечает на вопросы по базе фактов
+  qa_per_user_per_day: 8
+  qa_daily_limit: 300
+
+# ── Реклама ──────────────────────────────────────────────────────────────────
+ads:
+  default_top_minutes: 60          # сколько рекламный пост держится последним в ленте
+  default_feed_hours: 24           # через сколько удаляется (0 — не удалять)
+  breaking_overrides_top: false    # может ли «молния» перебить рекламный «топ»
+  require_erid: true               # предупреждать, если пост создаётся без erid
+
+# ── Аналитика ────────────────────────────────────────────────────────────────
+analytics:
+  scrape_views: true               # читать просмотры постов с публичной страницы t.me/s/<канал>
+  rkn_reminder: true               # напомнить о реестре РКН при подходе к 10 000 подписчиков
