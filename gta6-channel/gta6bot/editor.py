@@ -287,7 +287,8 @@ class Editor:
         if post is None:
             return "missing"
         if force_review or self.wants_review(post):
-            await review.send_card(self.ctx, post_id)
+            if not self.ctx.dry_run:
+                await review.send_card(self.ctx, post_id)
             return "review"
         await self.ctx.db.update_post(post_id, status="queued")
         return "queued"

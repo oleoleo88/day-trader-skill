@@ -34,6 +34,7 @@ class Ctx:
     bot: "Bot"
     llm: Any
     http: "aiohttp.ClientSession | None" = None
+    dry_run: bool = False   # пробный прогон: в Telegram ничего не отправляем
 
     # заполняется при старте из Telegram
     channel_id: int = 0
@@ -84,8 +85,8 @@ class Ctx:
     def clock_text(self) -> str:
         n = self.now_local()
         weekdays = ("понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье")
-        return f"{n:%Y-%m-%d} ({weekdays[n.weekday()]}), {n:%H:%M} по московскому времени" \
-            if self.cfg.channel.timezone == "Europe/Moscow" else f"{n:%Y-%m-%d} ({weekdays[n.weekday()]}), {n:%H:%M} ({self.cfg.channel.timezone})"
+        zone = "по московскому времени" if self.cfg.channel.timezone == "Europe/Moscow" else f"({self.cfg.channel.timezone})"
+        return f"{n:%Y-%m-%d} ({weekdays[n.weekday()]}), {n:%H:%M} {zone}"
 
     # ── ссылки ──────────────────────────────────────────────────────────────
     @property

@@ -1,0 +1,10 @@
+[project]
+name = "gta6bot"
+version = "1.0.0"
+description = "Автоматизация Telegram-канала о GTA 6: сбор новостей, ИИ-редактор, автопубликация, модерация"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-q"

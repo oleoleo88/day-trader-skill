@@ -1,0 +1,7 @@
+aiogram==3.31.0
+anthropic==2.8.0
+feedparser==6.0.14
+trafilatura==2.3.1
+aiosqlite==0.22.1
+PyYAML==6.0.3
+tzdata>=2025.2

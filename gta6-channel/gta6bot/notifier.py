@@ -25,6 +25,9 @@ class Notifier:
     async def send(self, text: str, **kwargs: Any) -> Message | None:
         """Отправить сообщение в админ-чат. Сбой отправки не должен ронять вызывающий код."""
         kwargs.setdefault("link_preview_options", NO_PREVIEW)
+        if self.ctx.dry_run or self.ctx.bot is None:
+            log.info("[админ-чат] %s", text)
+            return None
         try:
             return await self.ctx.bot.send_message(self.ctx.admin_chat, clip_html(text), **kwargs)
         except TelegramAPIError as e:
